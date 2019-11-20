@@ -1,0 +1,193 @@
+<template>
+  <div class="posters">
+    <h1>Create your own poster</h1>
+
+    <div class="selections">
+      <RadioInputList :items="sizeTypes" nl-or-en="nl" @itemSelected="onSizeTypeSelected"/>
+      <RadioInputList v-if="selectedSizeType === 'A-formaten'" :items="aSizes" nl-or-en="nl"
+                      @itemSelected="onFormatSelected"/>
+      <RadioInputList v-if="selectedSizeType === 'B-formaten'" :items="bSizes" nl-or-en="nl"
+                      @itemSelected="onFormatSelected"/>
+      <RadioInputList v-if="selectedSizeType === 'Specials'" :items="specials" nl-or-en="nl"
+                      @itemSelected="onFormatSelected"/>
+      <RadioInputList v-if="selectedSizeType === 'Stoepbord posters'" :items="pavementSignSizes"
+                      nl-or-en="nl" @itemSelected="onFormatSelected"/>
+
+      <RadioInputList v-if="selectedFormat" :items="printtypes" nl-or-en="nl"
+                      @itemSelected="onPrintTypeSelected"/>
+
+      <RadioInputList v-if="selectedPrintType" :items="numberOptions" nl-or-en="en"
+                      @itemSelected="onNumberOfPrintsSelected"/>
+    </div>
+
+    <div class="selection-information">
+      <h2>Mijn geselecteerde keuzes:</h2>
+      <span><label>Formaat: </label> {{ selectedSizeType }}</span>
+      <span><label>Formaat (b x h): </label> {{ selectedFormat }}</span>
+      <span><label>Bedrukking: </label> {{ selectedPrintType }}</span>
+      <span><label>Aantal: </label> {{ selectedNumberOfPrints }}</span>
+    </div>
+
+  </div>
+</template>
+
+<script>
+  import axios from 'axios';
+  import RadioInputList from '../components/RadioInputList';
+
+  export default {
+    name: 'Posters',
+    components: {
+      RadioInputList
+    },
+    data() {
+      return {
+        selectedSizeType: null,
+        selectedFormat: null,
+        selectedPrintType: null,
+        selectedNumberOfPrints: null,
+        formatOptions: [],
+        sizeOptions: [],
+        printtypeOptions: [],
+        numberOptions: [],
+      };
+    },
+    computed: {
+      sizes: function () {
+        return this.sizeOptions.filter(s => s.name != null)
+          .map(size => {
+            this.$set(size, 'checked', false);
+            return size;
+          });
+      },
+      sizeTypes: function () {
+        return this.sizes.filter(s => !s.parent)
+          .sort((a, b) => this.sortAlphabetically(a.name.nl, b.name.nl));
+      },
+      aSizes: function () {
+        return this.sizes.filter(s => s.parent === 'a_formaten');
+      },
+      bSizes: function () {
+        return this.sizes.filter(s => s.parent === 'b_formaten');
+      },
+      specials: function () {
+        return this.sizes.filter(s => s.parent === 'specials');
+      },
+      pavementSignSizes: function () {
+        return this.sizes.filter(s => s.parent === 'pavement_sign');
+      },
+      printtypes: function () {
+        return this.printtypeOptions.filter(s => s.name != null)
+          .map(size => {
+            this.$set(size, 'checked', false);
+            return size;
+          });
+      },
+    },
+    methods: {
+      getFormatOptions() {
+        axios
+          .get('/data/posters.json')
+          .then(response => {
+            const formatOptions = response.data.propertyGroups.find(p => p.title.nl === 'Formaat');
+            this.sizeOptions = formatOptions.properties.find(o => o.slug === 'size').options;
+            this.printtypeOptions = formatOptions.properties.find(o => o.slug === 'printtype').options;
+            this.formatOptions = formatOptions;
+
+            this.numberOptions = response.data.propertyGroups.find(p => p.title.nl === 'Aantal').properties[0].options;
+          });
+      },
+      onSizeTypeSelected(selection) {
+        this.selectedSizeType = selection;
+      },
+      onFormatSelected(selection) {
+        this.selectedFormat = selection;
+      },
+      onPrintTypeSelected(selection) {
+        this.selectedPrintType = selection;
+        console.log(this.selectedPrintType);
+      },
+      onNumberOfPrintsSelected(selection) {
+        this.selectedNumberOfPrints = selection;
+      },
+      sortAlphabetically(a, b) {
+        if (a < b) {
+          return -1;
+        }
+        if (a > b) {
+          return 1;
+        }
+        return 0;
+      },
+    },
+    beforeMount() {
+      this.getFormatOptions();
+      this.getFormatOptions();
+    },
+  };
+</script>
+
+<style lang="scss" scoped>
+  .posters {
+    display: grid;
+    grid-template-columns: auto 400px;
+    grid-template-rows: 80px auto;
+
+    h1 {
+      text-align: left;
+      margin: 20px;
+
+      grid-column: 1 / 1;
+    }
+
+    .selections {
+      grid-column: 1 / 1;
+
+      margin: 20px;
+    }
+
+    .selection-information {
+      height: 200px;
+
+      margin: 20px;
+      padding: 20px;
+      text-align: left;
+
+      border: 1px solid #000000;
+      border-radius: 10px;
+
+      span {
+        display: block;
+      }
+    }
+
+    .md-list {
+      padding: 0 0 8px 0;
+
+      .md-list-item {
+        border-width: 1px 1px 0 1px;
+        border-style: solid;
+        border-color: #000000;
+
+        &:hover {
+          background-color: #e6e6e6;
+        }
+
+        &:last-child {
+          border-bottom: 1px;
+          border-style: solid;
+          border-color: #000000;
+        }
+
+        &.checked {
+          background-color: lightgray;
+        }
+
+        input[type=radio] {
+          visibility: hidden;
+          position: fixed;
+        }
+      }
+    }
+  }
+</style>
