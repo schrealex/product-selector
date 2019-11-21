@@ -20,14 +20,31 @@
                       @itemSelected="onNumberOfPrintsSelected"/>
     </div>
 
-    <div class="selection-information">
-      <h2>Mijn geselecteerde keuzes:</h2>
-      <span><label>Formaat: </label> {{ selectedSizeType }}</span>
-      <span><label>Formaat (b x h): </label> {{ selectedFormat }}</span>
-      <span><label>Bedrukking: </label> {{ selectedPrintType }}</span>
-      <span><label>Aantal: </label> {{ selectedNumberOfPrints }}</span>
+    <div class="right-wrapper">
+      <div class="selection-information">
+        <h2>Mijn geselecteerde keuzes:</h2>
+        <span><label>Formaat: </label> {{ selectedSizeType }}</span>
+        <span><label>Formaat (b x h): </label> {{ selectedFormat }}</span>
+        <span><label>Bedrukking: </label> {{ selectedPrintType }}</span>
+        <span><label>Aantal: </label> {{ selectedNumberOfPrints }}</span>
+
+        <md-button v-if="selectedNumberOfPrints" class="md-raised" @click="addProductToCart()">Add to cart</md-button>
+      </div>
+
+      <div v-if="products.length > 0" class="shopping-cart">
+        <h2>Mijn winkelwagen:</h2>
+        <span v-for="product in products">
+          {{ product.numberOfPrints }} x {{ product.format }} {{ product.printType }}
+        </span>
+
+        <md-button class="md-raised" @click="placeOrder()">Order plaatsen</md-button>
+      </div>
     </div>
 
+    <md-snackbar md-position="center" :md-duration="50000" :md-active.sync="showSnackbar" md-persistent>
+      <span>Order geplaatst</span>
+      <md-button class="md-primary" @click="showSnackbar = false">OK</md-button>
+    </md-snackbar>
   </div>
 </template>
 
@@ -50,6 +67,8 @@
         sizeOptions: [],
         printtypeOptions: [],
         numberOptions: [],
+        products: [],
+        showSnackbar: false,
       };
     },
     computed: {
@@ -119,9 +138,20 @@
         }
         return 0;
       },
+      addProductToCart() {
+        const product = {
+          formatType: this.selectedSizeType,
+          format: this.selectedFormat,
+          printType: this.selectedPrintType,
+          numberOfPrints: this.selectedNumberOfPrints,
+        };
+        this.products.push(product);
+      },
+      placeOrder() {
+        this.showSnackbar = true;
+      }
     },
     beforeMount() {
-      this.getFormatOptions();
       this.getFormatOptions();
     },
   };
@@ -146,20 +176,28 @@
       margin: 20px;
     }
 
-    .selection-information {
-      height: 200px;
+    .right-wrapper{
+      .selection-information, .shopping-cart {
+        grid-row: 2 / 1;
+        min-height: 240px;
 
-      margin: 20px;
-      padding: 20px;
-      text-align: left;
+        margin: 20px;
+        padding: 20px;
+        text-align: left;
 
-      border: 1px solid #000000;
-      border-radius: 10px;
+        border: 1px solid #000000;
+        border-radius: 10px;
 
-      span {
-        display: block;
+        .md-button {
+          margin: 20px 20px 20px 0;
+        }
+
+        span {
+          display: block;
+        }
       }
     }
+
 
     .md-list {
       padding: 0 0 8px 0;
@@ -190,6 +228,10 @@
           position: fixed;
         }
       }
+    }
+
+    .md-snackbar {
+      background-color: #ffffff;
     }
   }
 </style>
