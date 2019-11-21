@@ -21,21 +21,21 @@
 
         <md-list>
           <md-list-item>
+            <font-awesome-icon :icon="['far', 'file']"/>
             <router-link to="/posters">
-              <font-awesome-icon :icon="['far', 'file']"/>
               <span class="md-list-item-text">Posters</span>
             </router-link>
           </md-list-item>
 
           <md-list-item>
+            <font-awesome-icon :icon="['far', 'folder']"/>
             <router-link to="/folders">
-              <font-awesome-icon :icon="['far', 'folder']"/>
               <span class="md-list-item-text">Folders</span>
             </router-link>
           </md-list-item>
 
           <md-list-item>
-              <font-awesome-icon :icon="['far', 'address-card']"/>
+            <font-awesome-icon :icon="['far', 'address-card']"/>
             <router-link to="/businesscards">
               <span class="md-list-item-text">Business cards</span>
             </router-link>
@@ -60,28 +60,65 @@
       };
     },
     methods: {
-      toggleMenu () {
-        this.menuVisible = !this.menuVisible
+      toggleMenu() {
+        this.menuVisible = !this.menuVisible;
       }
     },
   };
 </script>
 
 <style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-.md-list-item {
-
-  span {
-    margin-left: 15px;
-    font-size: 16px;
+  html, body {
+    width: 100%;
+    height: 100%;
   }
-}
 
+  #app {
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
+    height: 100%;
+
+    .md-app {
+      height: 100%;
+
+      .md-title a:not(.md-button) {
+        color: #000000;
+
+        &:hover {
+          text-decoration: none;
+        }
+      }
+
+      .md-app-drawer {
+        width: 180px;
+      }
+    }
+  }
+
+  .md-app-drawer {
+    .md-list-item {
+      .md-list-item-content {
+        justify-content: left;
+      }
+
+      span {
+        margin-left: 15px;
+        font-size: 16px;
+        text-align: left;
+      }
+    }
+
+    a:not(.md-button) {
+      color: #000000;
+
+      &:hover {
+        color: rgba(0, 0, 0, 0.6);
+        text-decoration: none;
+        -webkit-transition: all 0.50s ease-in-out;
+      }
+    }
+  }
 </style>

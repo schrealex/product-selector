@@ -169,6 +169,8 @@
         border-style: solid;
         border-color: #000000;
 
+          justify-content: left;
+
         &:hover {
           background-color: #e6e6e6;
         }

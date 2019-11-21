@@ -37,12 +37,12 @@ export default {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-  }
 
-  .md-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    .md-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 
   @media screen and (min-width: 360px) {
